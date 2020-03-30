@@ -9,12 +9,14 @@ import (
 	"os"
 	"github.com/gorilla/mux"
 	"gocloud.dev/server"
+	"strconv"
+	"io/ioutil"
 	)
 
 func main() {
     r := mux.NewRouter()
-    r.HandleFunc("/", HandlerWebsite)
-	r.HandleFunc("/meetings", indexHandlerMeetings)
+    r.HandleFunc("/", indexHandlerWebsite)
+	r.HandleFunc("/meetings/", indexHandlerMeetings)
 	r.HandleFunc("/voting/{id:[0-9]+}", indexHandlerVoting)
 
     port := os.Getenv("PORT")
@@ -27,13 +29,18 @@ func main() {
 
 }
 
-func HandlerWebsite(w http.ResponseWriter, r *http.Request){
+func indexHandlerWebsite(w http.ResponseWriter, r *http.Request){
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
 		return
 	}
 
-	fmt.Fprint(w, "An unofficial API for the National Council of the Slovak Republic voting statistics, work in progress")
+	content, err := ioutil.ReadFile("index.html")
+    if err != nil {
+        log.Fatal(err)
+    }
+
+	fmt.Fprint(w, string(content))
 
 }
 
@@ -44,8 +51,16 @@ func indexHandlerMeetings(w http.ResponseWriter, r *http.Request){
 
 func indexHandlerVoting(w http.ResponseWriter, r *http.Request){
 	vars := mux.Vars(r)
-	varId := vars["id"]
-	fmt.Fprint(w, varId)
+	varID := vars["id"]
+	//fmt.Fprint(w, varId)
+	i,err := strconv.Atoi(varID)
+
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	fmt.Fprint(w,string(scrape_meeting(i)))
 }
 
 // [END indexHandler]
