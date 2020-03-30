@@ -7,31 +7,27 @@ import (
 	"log"
 	"net/http"
 	"os"
-)
+	"github.com/gorilla/mux"
+	"gocloud.dev/server"
+	)
 
 func main() {
-	http.HandleFunc("/", indexHandlerWebsite)
-	http.HandleFunc("/meetings", indexHandlerMeetings)
-	http.HandleFunc("/voting", indexHandlerVoting)
-	
+    r := mux.NewRouter()
+    r.HandleFunc("/", HandlerWebsite)
+	r.HandleFunc("/meetings", indexHandlerMeetings)
+	r.HandleFunc("/voting/{id:[0-9]+}", indexHandlerVoting)
 
-	// [START setting_port]
-	port := os.Getenv("PORT")
+    port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
-		log.Printf("Defaulting to port %s", port)
 	}
-
+	srv := server.New(r, nil)
 	log.Printf("Listening on port %s", port)
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
-		log.Fatal(err)
-	}
-	// [END setting_port]
+	log.Fatal(srv.ListenAndServe(fmt.Sprintf(":%s", port)))
+
 }
 
-// indexHandler responds to requests with our greeting.
-
-func indexHandlerWebsite(w http.ResponseWriter, r *http.Request){
+func HandlerWebsite(w http.ResponseWriter, r *http.Request){
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
 		return
@@ -47,8 +43,10 @@ func indexHandlerMeetings(w http.ResponseWriter, r *http.Request){
 }
 
 func indexHandlerVoting(w http.ResponseWriter, r *http.Request){
-
-	fmt.Fprint(w, "test2")
+	vars := mux.Vars(r)
+	varId := vars["id"]
+	fmt.Fprint(w, varId)
 }
+
 // [END indexHandler]
 // [END gae_go111_app]
