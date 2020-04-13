@@ -1,4 +1,3 @@
-// Sample helloworld is an App Engine app.
 package main
 
 // [START import]
@@ -45,11 +44,12 @@ func indexHandlerWebsite(w http.ResponseWriter, r *http.Request){
 }
 
 func indexHandlerMeetings(w http.ResponseWriter, r *http.Request){
-
+	enableCors(&w)
 	fmt.Fprint(w, string(scrape_meeting_id()))
 }
 
 func indexHandlerVoting(w http.ResponseWriter, r *http.Request){
+	enableCors(&w)
 	vars := mux.Vars(r)
 	varID := vars["id"]
 	//fmt.Fprint(w, varId)
@@ -63,5 +63,6 @@ func indexHandlerVoting(w http.ResponseWriter, r *http.Request){
 	fmt.Fprint(w,string(scrape_meeting(i)))
 }
 
-// [END indexHandler]
-// [END gae_go111_app]
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}

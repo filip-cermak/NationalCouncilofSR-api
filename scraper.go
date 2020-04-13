@@ -1,7 +1,6 @@
 package main
 
 import (
-	//"fmt"
 	"strconv"
 	"encoding/json"
 	"github.com/gocolly/colly"
