@@ -1,6 +1,6 @@
 <h1><span style="font-size: xx-large; background-color: #00ffff;">Unofficial API of National Council of Slovakia Voting Statistics</span></h1>
 <p>Endpoints:</p>
-<p><b>/meetings &ndash;</b> returns JSON list of the latest meetings:</p>
+<p><b>/meetings/ &ndash;</b> returns JSON list of the latest meetings:</p>
 <p><code>{SessionID: &ldquo;xyz&rdquo; Timestamp: &ldquo;xyz&rdquo; Text: &ldquo;xyz&rdquo;}</code></p>
 <p><b>/voting/{SessionID} &ndash;</b> returns JSON with the voting data of the session specified by the SessionID. VoteType: Z - for, P - against, 0 - not present, ? - abstention, N - did not vote </p>
 <p><code>{ Names: [&ldquo;MP1_Name&rdquo;, &ldquo;MP2_Name&rdquo;, &hellip;], Parties: [&ldquo;MP1_Party&rdquo;, &ldquo;MP2_Party&rdquo;, &hellip;], Vote: [&ldquo;MP1_VoteType&rdquo;, &ldquo;MP2_VoteType&rdquo;, &hellip;]}</code></p>
