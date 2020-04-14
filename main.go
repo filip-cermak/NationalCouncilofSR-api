@@ -74,6 +74,7 @@ func indexHandlerVoting(w http.ResponseWriter, r *http.Request) {
 func indexHandlerDeleteCache(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
 	storage = NewStorage()
+	fmt.Print("Cache Deleted!\n")
 }
 
 func enableCors(w *http.ResponseWriter) {
