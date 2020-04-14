@@ -22,8 +22,8 @@ func init() {
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", indexHandlerWebsite)
-	r.HandleFunc("/meetings/", cached("1d", indexHandlerMeetings))
-	r.HandleFunc("/voting/{id:[0-9]+}", cached("1d", indexHandlerVoting))
+	r.HandleFunc("/meetings/", cached("24h", indexHandlerMeetings))
+	r.HandleFunc("/voting/{id:[0-9]+}", cached("24h", indexHandlerVoting))
 
 	port := os.Getenv("PORT")
 	if port == "" {
