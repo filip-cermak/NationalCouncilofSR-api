@@ -24,6 +24,7 @@ func main() {
 	r.HandleFunc("/", indexHandlerWebsite)
 	r.HandleFunc("/meetings/", cached("24h", indexHandlerMeetings))
 	r.HandleFunc("/voting/{id:[0-9]+}", cached("24h", indexHandlerVoting))
+	r.HandleFunc("/deletecache", indexHandlerDeleteCache)
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -68,6 +69,11 @@ func indexHandlerVoting(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprint(w, string(scrape_meeting(i)))
+}
+
+func indexHandlerDeleteCache(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+	storage = NewStorage()
 }
 
 func enableCors(w *http.ResponseWriter) {
