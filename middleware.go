@@ -12,6 +12,7 @@ func cached(duration string, handler func(w http.ResponseWriter, r *http.Request
 		content := storage.Get(r.RequestURI)
 		if content != nil {
 			fmt.Print("Cache Hit!\n")
+			enableCors(&w)
 			w.Write(content)
 		} else {
 			c := httptest.NewRecorder()
