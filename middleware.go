@@ -32,6 +32,7 @@ func cached(duration string, handler func(w http.ResponseWriter, r *http.Request
 				fmt.Printf("Page not cached. err: %s\n", err)
 			}
 
+			enableCors(&w)
 			w.Write(content)
 		}
 
