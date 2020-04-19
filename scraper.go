@@ -2,9 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gocolly/colly"
 )
@@ -26,10 +28,15 @@ type sessions struct {
 }
 
 func scrapeMeetingID() []byte {
+
+	var allSessions []votingSession
+
 	// Instantiate default collector
 	c := colly.NewCollector()
 
-	var allSessions []votingSession
+	//NRSR website takes long to load occasionally
+	timeout, err := time.ParseDuration("20s")
+	c.SetRequestTimeout(timeout)
 
 	// On every a element which has href attribute call callback
 
@@ -49,7 +56,16 @@ func scrapeMeetingID() []byte {
 
 	})
 
+	// Set error handler
+	c.OnError(func(r *colly.Response, err error) {
+		fmt.Println("Request URL:", r.Request.URL, "failed with response:", r, "\nError:", err)
+	})
+
 	c.Visit("https://www.nrsr.sk/web/default.aspx?SectionId=108")
+
+	if len(allSessions) == 0 {
+		fmt.Println("empty")
+	}
 
 	CurrentVotingSessions := &sessions{VotingSessions: allSessions}
 	b, err := json.Marshal(CurrentVotingSessions)
@@ -62,12 +78,17 @@ func scrapeMeetingID() []byte {
 }
 
 func scrapeMeeting(meetingID int) []byte {
-	// Instantiate default collector
-	c := colly.NewCollector()
 
 	var nameSlc []string
 	var partySlc []string
 	var voteSlc []string
+
+	// Instantiate default collector
+	c := colly.NewCollector()
+
+	//NRSR website takes long to load occasionally
+	timeout, err := time.ParseDuration("20s")
+	c.SetRequestTimeout(timeout)
 
 	// On every a element which has href attribute call callback
 	party := ""
