@@ -9,27 +9,27 @@ import (
 
 )
 
-type voting_info struct{
+type votingInfo struct{
 	Names []string
 	Parties []string
 	Votes  []string
 }
 
-type voting_session struct{
- 	Session_ID string
+type votingSession struct{
+ 	SessionID string
  	Timestamp string
  	Text string
 }
 
 type sessions struct{
- 	VotingSessions []voting_session
+ 	VotingSessions []votingSession
 }
 
-func scrape_meeting_id()([]byte){
+func scrapeMeetingID()([]byte){
 	// Instantiate default collector
 	c := colly.NewCollector()
 
-	var allSessions []voting_session
+	var allSessions []votingSession
 
 	// On every a element which has href attribute call callback
 
@@ -43,9 +43,9 @@ func scrape_meeting_id()([]byte){
 		text := e.ChildText("td:nth-child(5)")
 		//sessionID
 		s := strings.Split(e.ChildAttr("a[href]", "href"), "=")
-		session_ID := s[len(s)-1]
+		sessionID := s[len(s)-1]
 
-		allSessions = append(allSessions, voting_session{Session_ID: session_ID, Timestamp: timestamp, Text: text})
+		allSessions = append(allSessions, votingSession{SessionID: sessionID, Timestamp: timestamp, Text: text})
 		
 		})
 
@@ -62,13 +62,13 @@ func scrape_meeting_id()([]byte){
 }
 
 
-func scrape_meeting(meeting_id int)([]byte){
+func scrapeMeeting(meetingID int)([]byte){
 	// Instantiate default collector
 	c := colly.NewCollector()
 
-	var name_slc []string
-	var party_slc []string
-	var vote_slc []string
+	var nameSlc []string
+	var partySlc []string
+	var voteSlc []string
 
 	// On every a element which has href attribute call callback
 	party:= ""
@@ -82,24 +82,24 @@ func scrape_meeting(meeting_id int)([]byte){
 		}
 
 		if len(e.Text) > 0 && string(e.Text[0]) ==  "[" && string(e.Text[0]) !=  "\n"{
-			vote_type := e.Text [1]
+			voteType := e.Text [1]
 			name := e.Text[4:]
 
-			name_slc = append(name_slc, name)
-			party_slc = append(party_slc, party)
-			vote_slc = append(vote_slc, string(vote_type))
+			nameSlc = append(nameSlc, name)
+			partySlc = append(partySlc, party)
+			voteSlc = append(voteSlc, string(voteType))
 			}
 			
          })
 
-    s := strconv.Itoa(meeting_id)
+    s := strconv.Itoa(meetingID)
      
      // Start scraping
     c.Visit("https://www.nrsr.sk/web/Default.aspx?sid=schodze/hlasovanie/hlasklub&ID=" + s)
 
     //output
-	vote_obj:= &voting_info{ Names: name_slc, Parties: party_slc, Votes: vote_slc}
-	b, err := json.Marshal(vote_obj)
+	voteObj:= &votingInfo{ Names: nameSlc, Parties: partySlc, Votes: voteSlc}
+	b, err := json.Marshal(voteObj)
 
 	if err != nil {
 		log.Fatal(err)

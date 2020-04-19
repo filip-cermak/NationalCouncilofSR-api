@@ -53,7 +53,7 @@ func indexHandlerWebsite(w http.ResponseWriter, r *http.Request) {
 
 func indexHandlerMeetings(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
-	fmt.Fprint(w, string(scrape_meeting_id()))
+	fmt.Fprint(w, string(scrapeMeetingID()))
 }
 
 func indexHandlerVoting(w http.ResponseWriter, r *http.Request) {
@@ -68,7 +68,7 @@ func indexHandlerVoting(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprint(w, string(scrape_meeting(i)))
+	fmt.Fprint(w, string(scrapeMeeting(i)))
 }
 
 func indexHandlerDeleteCache(w http.ResponseWriter, r *http.Request) {
