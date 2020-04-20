@@ -51,12 +51,19 @@ func indexHandlerWebsite(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func indexHandlerMeetings(w http.ResponseWriter, r *http.Request) {
+func indexHandlerMeetings(w http.ResponseWriter, r *http.Request) error {
 	enableCors(&w)
-	fmt.Fprint(w, string(scrapeMeetingID()))
+	s, err := scrapeMeetingID()
+	fmt.Fprint(w, string(s))
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func indexHandlerVoting(w http.ResponseWriter, r *http.Request) {
+func indexHandlerVoting(w http.ResponseWriter, r *http.Request) error {
 	enableCors(&w)
 	vars := mux.Vars(r)
 	varID := vars["id"]
@@ -65,10 +72,18 @@ func indexHandlerVoting(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		http.NotFound(w, r)
-		return
+		log.Fatal(err)
 	}
 
-	fmt.Fprint(w, string(scrapeMeeting(i)))
+	s, err := scrapeMeeting(i)
+
+	fmt.Fprint(w, string(s))
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func indexHandlerDeleteCache(w http.ResponseWriter, r *http.Request) {
