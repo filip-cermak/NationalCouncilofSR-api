@@ -87,7 +87,7 @@ func scrapeMeeting(meetingID int) []byte {
 	c := colly.NewCollector()
 
 	//NRSR website takes long to load occasionally
-	timeout, err := time.ParseDuration("20s")
+	timeout, err := time.ParseDuration("30s")
 	c.SetRequestTimeout(timeout)
 
 	// On every a element which has href attribute call callback
@@ -116,6 +116,10 @@ func scrapeMeeting(meetingID int) []byte {
 
 	// Start scraping
 	c.Visit("https://www.nrsr.sk/web/Default.aspx?sid=schodze/hlasovanie/hlasklub&ID=" + s)
+
+	if len(nameSlc) == 0 {
+		fmt.Println("empty votes")
+	}
 
 	//output
 	voteObj := &votingInfo{Names: nameSlc, Parties: partySlc, Votes: voteSlc}
