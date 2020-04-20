@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func cached(duration string, handler func(w http.ResponseWriter, r *http.Request)) func(w http.ResponseWriter, r *http.Request) {
+func cached(duration string, handler func(w http.ResponseWriter, r *http.Request) error) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		content := storage.Get(r.RequestURI)
 		if content != nil {
@@ -16,7 +16,7 @@ func cached(duration string, handler func(w http.ResponseWriter, r *http.Request
 			w.Write(content)
 		} else {
 			c := httptest.NewRecorder()
-			handler(c, r)
+			err := handler(c, r)
 
 			for k, v := range c.HeaderMap {
 				w.Header()[k] = v
@@ -25,11 +25,13 @@ func cached(duration string, handler func(w http.ResponseWriter, r *http.Request
 			w.WriteHeader(c.Code)
 			content := c.Body.Bytes()
 
-			if d, err := time.ParseDuration(duration); err == nil {
-				fmt.Printf("New page cached: %s for %s\n", r.RequestURI, duration)
-				storage.Set(r.RequestURI, content, d)
-			} else {
-				fmt.Printf("Page not cached. err: %s\n", err)
+			if err == nil {
+				if d, err := time.ParseDuration(duration); err == nil {
+					fmt.Printf("New page cached: %s for %s\n", r.RequestURI, duration)
+					storage.Set(r.RequestURI, content, d)
+				} else {
+					fmt.Printf("Page not cached. err: %s\n", err)
+				}
 			}
 
 			enableCors(&w)
