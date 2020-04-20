@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"strconv"
@@ -27,7 +28,7 @@ type sessions struct {
 	VotingSessions []votingSession
 }
 
-func scrapeMeetingID() []byte {
+func scrapeMeetingID() ([]byte, error) {
 
 	var allSessions []votingSession
 
@@ -63,10 +64,6 @@ func scrapeMeetingID() []byte {
 
 	c.Visit("https://www.nrsr.sk/web/default.aspx?SectionId=108")
 
-	if len(allSessions) == 0 {
-		fmt.Println("empty")
-	}
-
 	CurrentVotingSessions := &sessions{VotingSessions: allSessions}
 	b, err := json.Marshal(CurrentVotingSessions)
 
@@ -74,10 +71,15 @@ func scrapeMeetingID() []byte {
 		log.Fatal(err)
 	}
 
-	return b
+	if len(allSessions) == 0 {
+		fmt.Println("empty")
+		return b, errors.New("scraper output empty")
+	}
+
+	return b, nil
 }
 
-func scrapeMeeting(meetingID int) []byte {
+func scrapeMeeting(meetingID int) ([]byte, error) {
 
 	var nameSlc []string
 	var partySlc []string
@@ -117,10 +119,6 @@ func scrapeMeeting(meetingID int) []byte {
 	// Start scraping
 	c.Visit("https://www.nrsr.sk/web/Default.aspx?sid=schodze/hlasovanie/hlasklub&ID=" + s)
 
-	if len(nameSlc) == 0 {
-		fmt.Println("empty votes")
-	}
-
 	//output
 	voteObj := &votingInfo{Names: nameSlc, Parties: partySlc, Votes: voteSlc}
 	b, err := json.Marshal(voteObj)
@@ -129,5 +127,10 @@ func scrapeMeeting(meetingID int) []byte {
 		log.Fatal(err)
 	}
 
-	return b
+	if len(nameSlc) == 0 {
+		fmt.Println("empty votes")
+		return b, errors.New("scraper output empty")
+	}
+
+	return b, nil
 }
