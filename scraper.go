@@ -28,7 +28,7 @@ type sessions struct {
 	VotingSessions []votingSession
 }
 
-func scrapeMeetingID() ([]byte, error) {
+func scrapeMeetingID(lang string) ([]byte, error) {
 
 	var allSessions []votingSession
 
@@ -63,6 +63,19 @@ func scrapeMeetingID() ([]byte, error) {
 	})
 
 	c.Visit("https://www.nrsr.sk/web/default.aspx?SectionId=108")
+
+	if lang == "en" {
+		//translate
+		for i, SingleSession := range allSessions {
+			t, err := translateText("en", SingleSession.Text)
+			allSessions[i].Text = t
+
+			fmt.Println(SingleSession.Text)
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+	}
 
 	CurrentVotingSessions := &sessions{VotingSessions: allSessions}
 	b, err := json.Marshal(CurrentVotingSessions)

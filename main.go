@@ -22,7 +22,8 @@ func init() {
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", indexHandlerWebsite)
-	r.HandleFunc("/meetings/", cached("24h", indexHandlerMeetings))
+	r.HandleFunc("/meetings/", cached("24h", indexHandlerMeetingsEN))
+	r.HandleFunc("/meetings/sl", cached("24h", indexHandlerMeetingsSL))
 	r.HandleFunc("/voting/{id:[0-9]+}", cached("24h", indexHandlerVoting))
 	r.HandleFunc("/deletecache", indexHandlerDeleteCache)
 
@@ -51,9 +52,21 @@ func indexHandlerWebsite(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func indexHandlerMeetings(w http.ResponseWriter, r *http.Request) error {
+func indexHandlerMeetingsSL(w http.ResponseWriter, r *http.Request) error {
 	enableCors(&w)
-	s, err := scrapeMeetingID()
+	s, err := scrapeMeetingID("sl")
+	fmt.Fprint(w, string(s))
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func indexHandlerMeetingsEN(w http.ResponseWriter, r *http.Request) error {
+	enableCors(&w)
+	s, err := scrapeMeetingID("en")
 	fmt.Fprint(w, string(s))
 
 	if err != nil {
