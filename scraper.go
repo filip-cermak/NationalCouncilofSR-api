@@ -53,8 +53,10 @@ func scrapeMeetingID(lang string) ([]byte, error) {
 		s := strings.Split(e.ChildAttr("a[href]", "href"), "=")
 		sessionID := s[len(s)-1]
 
-		allSessions = append(allSessions, votingSession{SessionID: sessionID, Timestamp: timestamp, Text: text})
-
+		//some sessions use secret ballot voting, so exclude these meetings
+		if e.ChildText("td:nth-child(6)") != "" {
+			allSessions = append(allSessions, votingSession{SessionID: sessionID, Timestamp: timestamp, Text: text})
+		}
 	})
 
 	// Set error handler
