@@ -1,1 +1,6 @@
 runtime: go112
+
+handlers:
+    - url: /
+      static_files: www/index.html
+      upload: www/index.html
