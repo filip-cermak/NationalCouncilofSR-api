@@ -18,7 +18,7 @@ func init() {
 
 func main() {
 	r := mux.NewRouter()
-	//r.HandleFunc("/", indexHandlerWebsite)
+	r.HandleFunc("/", indexHandlerWebsite)
 	r.HandleFunc("/meetings/", cached("24h", indexHandlerMeetingsEN))
 	r.HandleFunc("/meetings/sl", cached("24h", indexHandlerMeetingsSL))
 	r.HandleFunc("/voting/{id:[0-9]+}", cached("24h", indexHandlerVoting))
