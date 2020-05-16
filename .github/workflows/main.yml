@@ -26,4 +26,4 @@ jobs:
           export_default_credentials: true
       - run: |
             gcloud config set project ${{ secrets.PROJECT_ID }}
-            gcloud app deploy
+            gcloud app deploy --quiet
